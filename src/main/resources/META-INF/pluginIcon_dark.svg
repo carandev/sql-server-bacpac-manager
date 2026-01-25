@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <!-- Background -->
+  <rect width="40" height="40" rx="8" fill="#3592C4"/>
+  
+  <!-- Database cylinder -->
+  <ellipse cx="20" cy="12" rx="10" ry="4" fill="#FFFFFF"/>
+  <rect x="10" y="12" width="20" height="16" fill="#FFFFFF"/>
+  <ellipse cx="20" cy="28" rx="10" ry="4" fill="#FFFFFF"/>
+  
+  <!-- Database lines -->
+  <ellipse cx="20" cy="18" rx="10" ry="4" fill="none" stroke="#3592C4" stroke-width="1.5"/>
+  <ellipse cx="20" cy="24" rx="10" ry="4" fill="none" stroke="#3592C4" stroke-width="1.5"/>
+  
+  <!-- Arrow (export/import symbol) -->
+  <path d="M30 20 L36 20 L36 17 L40 21 L36 25 L36 22 L30 22 Z" fill="#81C784"/>
+  <path d="M10 20 L4 20 L4 17 L0 21 L4 25 L4 22 L10 22 Z" fill="#FFB74D"/>
+</svg>

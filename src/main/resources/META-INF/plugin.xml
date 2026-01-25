@@ -1,0 +1,78 @@
+<idea-plugin>
+    <id>me.carandev.bacpac</id>
+    <name>SQL Server Bacpac Manager</name>
+    <version>1.0.0</version>
+    <vendor email="contacto@carandev.me" url="https://carandev.me">carandev</vendor>
+
+    <description><![CDATA[
+    <p>Import and export SQL Server .bacpac files directly from DataGrip's context menu.</p>
+    
+    <p>A .bacpac file is a portable backup format for SQL Server and Azure SQL databases that includes both schema and data.</p>
+    
+    <h3>Features</h3>
+    <ul>
+        <li><b>Export to .bacpac</b> - Right-click on any SQL Server database to export it</li>
+        <li><b>Import from .bacpac</b> - Right-click on a SQL Server connection to import a .bacpac file as a new database</li>
+        <li><b>Automatic SqlPackage detection</b> - Finds SqlPackage in PATH or common installation locations</li>
+        <li><b>One-click SqlPackage installation</b> - Install SqlPackage automatically via .NET SDK if not found</li>
+        <li><b>Background processing</b> - Export/import operations run in background with progress indication</li>
+    </ul>
+    
+    <h3>Requirements</h3>
+    <ul>
+        <li>SqlPackage CLI tool (can be installed automatically if you have .NET SDK)</li>
+        <li>A configured SQL Server or Azure SQL Database connection</li>
+    </ul>
+    
+    <h3>Usage</h3>
+    <ul>
+        <li><b>To export:</b> Right-click on a database → Bacpac → Export to .bacpac</li>
+        <li><b>To import:</b> Right-click on a SQL Server connection → Bacpac → Import .bacpac</li>
+    </ul>
+    
+    <hr/>
+    <p><em>Importa y exporta archivos .bacpac de SQL Server directamente desde el menú contextual de DataGrip.</em></p>
+    ]]></description>
+
+    <change-notes><![CDATA[
+    <h3>1.0.0</h3>
+    <ul>
+        <li>Initial release</li>
+        <li>Export SQL Server databases to .bacpac format</li>
+        <li>Import .bacpac files to create new databases</li>
+        <li>Automatic SqlPackage detection and installation</li>
+        <li>Support for SQL Server Authentication and Windows Authentication</li>
+    </ul>
+    ]]></change-notes>
+
+    <idea-version since-build="241"/>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.database</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService 
+            serviceImplementation="me.carandev.bacpac.settings.BacpacSettings"/>
+        <notificationGroup id="Bacpac Notifications" 
+                          displayType="BALLOON"/>
+    </extensions>
+
+    <actions>
+        <group id="me.carandev.bacpac.BacpacGroup"
+               text="Bacpac"
+               description="SQL Server .bacpac operations"
+               popup="true">
+            <add-to-group group-id="DatabaseViewPopupMenu" anchor="last"/>
+            
+            <action id="me.carandev.bacpac.ExportAction"
+                    class="me.carandev.bacpac.actions.ExportBacpacAction"
+                    text="Export to .bacpac"
+                    description="Export the selected database to a .bacpac file"/>
+            
+            <action id="me.carandev.bacpac.ImportAction"
+                    class="me.carandev.bacpac.actions.ImportBacpacAction"
+                    text="Import .bacpac"
+                    description="Import a .bacpac file to create a new database"/>
+        </group>
+    </actions>
+</idea-plugin>
