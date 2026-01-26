@@ -3,6 +3,7 @@ package me.carandev.bacpac.ui
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.dsl.builder.*
 import me.carandev.bacpac.settings.BacpacSettings
@@ -41,15 +42,7 @@ class ExportBacpacDialog(
          .withTitle("Seleccionar ubicación")
          .withDescription("Selecciona dónde guardar el archivo .bacpac")
         
-        // Permitir guardar archivos nuevos (no solo abrir existentes)
-        descriptor.isForcedToUseIdeaFileChooser = true
-        
-        fileField.addBrowseFolderListener(
-            "Seleccionar ubicación",
-            "Selecciona dónde guardar el archivo .bacpac",
-            project,
-            descriptor
-        )
+        fileField.addBrowseFolderListener(TextBrowseFolderListener(descriptor, project))
         
         init()
     }

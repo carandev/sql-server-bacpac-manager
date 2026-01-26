@@ -3,6 +3,7 @@ package me.carandev.bacpac.ui
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.dsl.builder.*
 import me.carandev.bacpac.settings.BacpacSettings
@@ -32,10 +33,12 @@ class ImportBacpacDialog(
         
         fileField.text = defaultDir
         fileField.addBrowseFolderListener(
-            "Seleccionar archivo .bacpac",
-            "Selecciona el archivo .bacpac a importar",
-            project,
-            FileChooserDescriptorFactory.createSingleFileDescriptor("bacpac")
+            TextBrowseFolderListener(
+                FileChooserDescriptorFactory.createSingleFileDescriptor("bacpac")
+                    .withTitle("Seleccionar archivo .bacpac")
+                    .withDescription("Selecciona el archivo .bacpac a importar"),
+                project
+            )
         )
         
         // Actualizar nombre de BD cuando se selecciona un archivo

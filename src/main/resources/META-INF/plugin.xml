@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>me.carandev.bacpac</id>
     <name>SQL Server Bacpac Manager</name>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
     <vendor email="contacto@carandev.me" url="https://carandev.me">carandev</vendor>
 
     <description><![CDATA[
@@ -35,6 +35,14 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <h3>1.0.2</h3>
+    <ul>
+        <li>Fixed compatibility issues with IntelliJ Platform 2024.2+</li>
+        <li>Migrated from internal API (DbDataSource.getDelegate) to public API</li>
+        <li>Replaced deprecated FileChooserDescriptorFactory methods</li>
+        <li>Updated file browser listeners to use non-deprecated API</li>
+    </ul>
+    
     <h3>1.0.0</h3>
     <ul>
         <li>Initial release</li>

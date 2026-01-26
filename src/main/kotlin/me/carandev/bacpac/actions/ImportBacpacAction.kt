@@ -127,7 +127,7 @@ class ImportBacpacAction : AnAction() {
         
         // Solo permitir si el click fue directamente en el DbDataSource (servidor)
         if (psiElement is DbDataSource) {
-            return DbImplUtil.getMaybeLocalDataSource(psiElement.delegate)
+            return DbImplUtil.getMaybeLocalDataSource(psiElement)
         }
         
         // Si es un DbElement, verificar si es el data source raíz
@@ -136,7 +136,7 @@ class ImportBacpacAction : AnAction() {
             val dbDataSource = findDbDataSource(psiElement)
             // Solo permitir si el elemento seleccionado ES el data source (no un hijo)
             if (dbDataSource != null && psiElement === dbDataSource) {
-                return DbImplUtil.getMaybeLocalDataSource(dbDataSource.delegate)
+                return DbImplUtil.getMaybeLocalDataSource(dbDataSource)
             }
         }
         

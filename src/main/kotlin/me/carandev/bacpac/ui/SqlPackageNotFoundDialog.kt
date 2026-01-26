@@ -1,9 +1,10 @@
 package me.carandev.bacpac.ui
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.dsl.builder.*
 import com.intellij.util.ui.JBUI
@@ -36,10 +37,12 @@ class SqlPackageNotFoundDialog(
         setCancelButtonText("Cancelar")
         
         manualPathField.addBrowseFolderListener(
-            "Seleccionar SqlPackage",
-            "Selecciona el ejecutable de SqlPackage",
-            project,
-            FileChooserDescriptorFactory.createSingleFileDescriptor()
+            TextBrowseFolderListener(
+                FileChooserDescriptor(true, false, false, false, false, false)
+                    .withTitle("Seleccionar SqlPackage")
+                    .withDescription("Selecciona el ejecutable de SqlPackage"),
+                project
+            )
         )
         
         init()

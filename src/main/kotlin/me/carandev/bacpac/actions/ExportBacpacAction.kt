@@ -139,7 +139,7 @@ class ExportBacpacAction : AnAction() {
         }
         
         // Obtener el LocalDataSource
-        val localDataSource = DbImplUtil.getMaybeLocalDataSource(dbDataSource.delegate) ?: return null
+        val localDataSource = DbImplUtil.getMaybeLocalDataSource(dbDataSource) ?: return null
         
         // Verificar que es SQL Server
         if (!isSqlServer(localDataSource)) return null
