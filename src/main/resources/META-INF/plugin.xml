@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>me.carandev.bacpac</id>
     <name>SQL Server Bacpac Manager</name>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <vendor email="contacto@carandev.me" url="https://carandev.me">carandev</vendor>
 
     <description><![CDATA[
@@ -35,6 +35,13 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <h3>1.0.3</h3>
+    <ul>
+        <li>Added macOS installation instructions and automatic path detection for dotnet and SqlPackage</li>
+        <li>Added automatic database DROP with connection rollback when bacpac import fails</li>
+        <li>Added user toggle in import dialog for auto-drop behavior</li>
+    </ul>
+    
     <h3>1.0.2</h3>
     <ul>
         <li>Fixed compatibility issues with IntelliJ Platform 2024.2+</li>
@@ -61,6 +68,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService 
             serviceImplementation="me.carandev.bacpac.settings.BacpacSettings"/>
+        <applicationService 
+            serviceImplementation="me.carandev.bacpac.services.DatabaseCleanupService"/>
         <notificationGroup id="Bacpac Notifications" 
                           displayType="BALLOON"/>
     </extensions>

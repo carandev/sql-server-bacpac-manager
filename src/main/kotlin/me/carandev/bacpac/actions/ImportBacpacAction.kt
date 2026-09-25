@@ -50,6 +50,7 @@ class ImportBacpacAction : AnAction() {
         
         val sourceFile = dialog.sourceFile
         val databaseName = dialog.databaseName
+        val autoDropOnFailure = dialog.autoDropOnFailure
         
         // Obtener parámetros de conexión
         val connectionParams = getConnectionParams(dataSource, project) ?: return
@@ -101,9 +102,21 @@ class ImportBacpacAction : AnAction() {
                         NotificationType.INFORMATION
                     ).notify(project)
                 } else {
+                    var cleanupNotice = ""
+                    if (autoDropOnFailure) {
+                        indicator.text = "Limpiando base de datos incompleta..."
+                        val cleanupResult = me.carandev.bacpac.services.DatabaseCleanupService.getInstance()
+                            .dropDatabase(project, dataSource, databaseName)
+                        cleanupNotice = if (cleanupResult.success) {
+                            "\n\nLa base de datos incompleta fue eliminada automáticamente del servidor."
+                        } else {
+                            "\n\nAdvertencia al limpiar la base de datos: ${cleanupResult.message}"
+                        }
+                    }
+
                     notification.createNotification(
                         "Error en la importación",
-                        "Error al importar a '$databaseName':\n${result.errorOutput.take(500)}",
+                        "Error al importar a '$databaseName':\n${result.errorOutput.take(500)}$cleanupNotice",
                         NotificationType.ERROR
                     ).notify(project)
                 }
@@ -122,7 +135,7 @@ class ImportBacpacAction : AnAction() {
      * Retorna null si hizo click en una base de datos u otro elemento hijo.
      */
     private fun getLocalDataSourceFromServer(e: AnActionEvent): LocalDataSource? {
-        val project = e.project ?: return null
+        if (e.project == null) return null
         val psiElement = e.getData(CommonDataKeys.PSI_ELEMENT) ?: return null
         
         // Solo permitir si el click fue directamente en el DbDataSource (servidor)

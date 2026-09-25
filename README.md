@@ -76,6 +76,25 @@ If you have .NET SDK installed, the plugin can install SqlPackage for you:
 dotnet tool install -g microsoft.sqlpackage
 ```
 
+### macOS Installation & Configuration
+
+1. Install SqlPackage globally via .NET tool:
+   ```bash
+   dotnet tool install -g microsoft.sqlpackage
+   ```
+
+2. Default executable location on macOS:
+   ```text
+   /Users/[username]/.dotnet/tools/sqlpackage
+   ```
+
+3. **DataGrip Path Configuration**: Because macOS GUI applications launched from Finder or Spotlight do not inherit user shell profiles (`.zshrc` / `.bash_profile`), DataGrip may not find `sqlpackage` or `dotnet` in its environment PATH. When prompted by the plugin, choose **"Configurar ruta"** and set the path manually:
+   ```text
+   /Users/<your-username>/.dotnet/tools/sqlpackage
+   ```
+
+4. If installed via Homebrew or custom paths, the plugin also checks `/opt/homebrew/bin/sqlpackage` and `/usr/local/bin/sqlpackage`.
+
 ### Manual Installation
 
 Download SqlPackage from Microsoft:
@@ -92,9 +111,9 @@ Download SqlPackage from Microsoft:
 
 ### "SqlPackage not found"
 
-1. Ensure SqlPackage is installed (see above)
-2. Make sure it's in your system PATH, or
-3. The plugin will search common installation locations automatically
+1. Ensure SqlPackage is installed (see above).
+2. On macOS, GUI apps may not inherit terminal `PATH`. Set the manual path in DataGrip to `/Users/<your-username>/.dotnet/tools/sqlpackage`.
+3. The plugin searches standard locations (`~/.dotnet/tools`, `/opt/homebrew/bin`, `/usr/local/bin`) automatically.
 
 ### "Login failed"
 

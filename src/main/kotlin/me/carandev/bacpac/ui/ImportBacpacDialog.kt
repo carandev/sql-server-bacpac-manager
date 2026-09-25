@@ -17,12 +17,19 @@ class ImportBacpacDialog(
     
     private val fileField = TextFieldWithBrowseButton()
     private val databaseNameField = JTextField()
+    private val autoDropCheckBox = com.intellij.ui.components.JBCheckBox(
+        "Eliminar base de datos automáticamente si la importación falla",
+        BacpacSettings.getInstance().state.autoDropOnFailure
+    )
     
     val sourceFile: String
         get() = fileField.text
     
     val databaseName: String
         get() = databaseNameField.text.trim()
+
+    val autoDropOnFailure: Boolean
+        get() = autoDropCheckBox.isSelected
     
     init {
         title = "Importar archivo .bacpac"
@@ -73,8 +80,12 @@ class ImportBacpacDialog(
                     .resizableColumn()
                     .comment("Nombre de la nueva base de datos a crear")
             }
+            row {
+                cell(autoDropCheckBox)
+                    .comment("Si la importación falla a mitad de proceso, se eliminará la base de datos para no dejarla corrupta.")
+            }
         }.apply {
-            preferredSize = java.awt.Dimension(500, 120)
+            preferredSize = java.awt.Dimension(500, 160)
         }
     }
     
@@ -105,8 +116,10 @@ class ImportBacpacDialog(
             return
         }
         
-        // Guardar el directorio usado
-        BacpacSettings.getInstance().state.lastImportDirectory = file.parent
+        // Guardar el directorio usado y preferencia
+        val settings = BacpacSettings.getInstance()
+        settings.state.lastImportDirectory = file.parent
+        settings.state.autoDropOnFailure = autoDropOnFailure
         
         super.doOKAction()
     }

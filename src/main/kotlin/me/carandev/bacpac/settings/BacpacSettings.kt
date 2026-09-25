@@ -21,6 +21,7 @@ class BacpacSettings : PersistentStateComponent<BacpacSettings.State> {
         var lastExportDirectory: String? = null
         var lastImportDirectory: String? = null
         var commandTimeout: Int = 120
+        var autoDropOnFailure: Boolean = true
     }
     
     override fun getState(): State = myState
