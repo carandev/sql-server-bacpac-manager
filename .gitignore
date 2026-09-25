@@ -26,3 +26,6 @@ Thumbs.db
 
 # Local configuration (puede contener rutas específicas de tu máquina)
 # gradle.properties  # Descomenta si no quieres compartir tu configuración local
+
+# SDD / OpenSpec
+openspec/

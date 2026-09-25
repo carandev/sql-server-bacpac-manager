@@ -28,8 +28,22 @@ class SqlPackageDetector {
         
         private val UNIX_PATHS = listOf(
             System.getenv("HOME")?.let { "$it/.dotnet/tools/sqlpackage" },
+            "/opt/homebrew/bin/sqlpackage",
             "/usr/local/bin/sqlpackage",
             "/opt/sqlpackage/sqlpackage"
+        ).filterNotNull()
+
+        private val DOTNET_WINDOWS_PATHS = listOf(
+            System.getenv("ProgramFiles")?.let { "$it\\dotnet\\dotnet.exe" },
+            System.getenv("ProgramFiles(x86)")?.let { "$it\\dotnet\\dotnet.exe" },
+            System.getenv("USERPROFILE")?.let { "$it\\.dotnet\\dotnet.exe" }
+        ).filterNotNull()
+
+        private val DOTNET_UNIX_PATHS = listOf(
+            "/usr/local/share/dotnet/dotnet",
+            "/opt/homebrew/bin/dotnet",
+            "/usr/local/bin/dotnet",
+            System.getenv("HOME")?.let { "$it/.dotnet/dotnet" }
         ).filterNotNull()
     }
     
@@ -53,8 +67,9 @@ class SqlPackageDetector {
     
     fun isInstalled(): Boolean = findSqlPackagePath() != null
     
-    fun isDotNetSdkInstalled(): Boolean {
-        return try {
+    fun findDotNetExecutable(): String? {
+        // Primero buscar si dotnet responde directamente desde PATH
+        try {
             val command = if (isWindows()) listOf("cmd", "/c", "dotnet", "--version")
                           else listOf("dotnet", "--version")
             
@@ -62,13 +77,38 @@ class SqlPackageDetector {
                 .redirectErrorStream(true)
                 .start()
             
-            val completed = process.waitFor(10, TimeUnit.SECONDS)
-            completed && process.exitValue() == 0
+            val completed = process.waitFor(5, TimeUnit.SECONDS)
+            if (completed && process.exitValue() == 0) {
+                return if (isWindows()) "dotnet.exe" else "dotnet"
+            }
         } catch (e: Exception) {
-            log.info("dotnet SDK no está instalado: ${e.message}")
-            false
+            log.debug("dotnet no encontrado en PATH: ${e.message}")
         }
+
+        // Buscar en ubicaciones conocidas del sistema (útil para macOS donde DataGrip no hereda PATH de la shell)
+        val candidatePaths = if (isWindows()) DOTNET_WINDOWS_PATHS else DOTNET_UNIX_PATHS
+        for (path in candidatePaths) {
+            val file = File(path)
+            if (file.exists() && (isWindows() || file.canExecute())) {
+                try {
+                    val process = ProcessBuilder(listOf(path, "--version"))
+                        .redirectErrorStream(true)
+                        .start()
+                    val completed = process.waitFor(5, TimeUnit.SECONDS)
+                    if (completed && process.exitValue() == 0) {
+                        log.info("dotnet SDK encontrado en ruta conocida: $path")
+                        return path
+                    }
+                } catch (e: Exception) {
+                    log.debug("Error probando dotnet en $path: ${e.message}")
+                }
+            }
+        }
+        
+        return null
     }
+
+    fun isDotNetSdkInstalled(): Boolean = findDotNetExecutable() != null
     
     data class InstallResult(
         val success: Boolean,
@@ -76,7 +116,8 @@ class SqlPackageDetector {
     )
     
     fun installSqlPackage(onProgress: (String) -> Unit = {}): InstallResult {
-        if (!isDotNetSdkInstalled()) {
+        val dotnetExecutable = findDotNetExecutable()
+        if (dotnetExecutable == null) {
             return InstallResult(
                 success = false,
                 message = ".NET SDK no está instalado. Por favor, instálalo desde https://dotnet.microsoft.com/download"
@@ -86,10 +127,10 @@ class SqlPackageDetector {
         return try {
             onProgress("Instalando SqlPackage...")
             
-            val command = if (isWindows()) {
+            val command = if (isWindows() && !dotnetExecutable.contains("\\")) {
                 listOf("cmd", "/c", "dotnet", "tool", "install", "-g", "microsoft.sqlpackage")
             } else {
-                listOf("dotnet", "tool", "install", "-g", "microsoft.sqlpackage")
+                listOf(dotnetExecutable, "tool", "install", "-g", "microsoft.sqlpackage")
             }
             
             val process = ProcessBuilder(command)
@@ -137,8 +178,6 @@ class SqlPackageDetector {
     }
     
     private fun findInPath(): String? {
-        val executableName = if (isWindows()) "sqlpackage.exe" else "sqlpackage"
-        
         return try {
             val command = if (isWindows()) {
                 listOf("cmd", "/c", "where", "sqlpackage")
